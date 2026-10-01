@@ -30,12 +30,16 @@ self.addEventListener('install', (event) => {
 });
 
 // Activación: Limpia cachés antiguas
+// Solo borrar cachés de esta propia app (por prefijo): no tocar las cachés
+// del portal ni las de otras apps alojadas en subcarpetas del mismo dominio.
+const esCachePropia = (c) => c.includes('cache_electronica_angelmicelti');
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
+          if (cache !== CACHE_NAME && esCachePropia(cache)) {
             return caches.delete(cache);
           }
         })
